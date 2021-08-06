@@ -36,14 +36,14 @@ def get_book_cover(link):
 def get_books_data(search_result, num):
     document = html.fromstring(search_result)
     book_links = ['{}{}'.format(api_base, link) for link in document.xpath('//div/a/@href') if 'download' not in link]
-    books = [[book_link, get_book_cover(book_link)] for book_link in book_links[:num]]
+    books = [{'title': book_link, 'cover': get_book_cover(book_link)} for book_link in book_links[:num]]
     return books
 
-def get_books(book_name, sort):
-    search_result = get_search_result(book_name, sort)
+def get_books(query):
+    search_result = get_search_result(query)
     if search_result != None:
         books = get_books_data(search_result, 20)
         return books
 
 if __name__ == '__main__':
-    books = get_books('Python', 'litres')
+    books = get_books('Python')
