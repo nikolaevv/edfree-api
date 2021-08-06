@@ -19,26 +19,31 @@ def get_search_result(book_name, sort='rating'):
     except requests.exceptions.ConnectionError:
         print('Connection error')
 
-    print(response.text)
     if response.text != 'Не нашлось ни единой книги, удовлетворяющей вашим требованиям.':
         return response.text
 
 def get_book_cover(link):
-    pass
+    try:
+        response = requests.get(link)
+    except requests.exceptions.ConnectionError:
+        print('Connection error')
 
-def get_books_ids(search_result):
+    page = html.fromstring(response.text)
+    images = ['http:{}'.format(image.strip()) for image in page.xpath('//div[@id="main"]/img/@src')]
+    if len(images) > 0:
+        return images[0]
+
+def get_books_data(search_result, num):
     document = html.fromstring(search_result)
     book_links = ['{}{}'.format(api_base, link) for link in document.xpath('//div/a/@href') if 'download' not in link]
-    books = [(book_link, get_book_cover(book_link)) for book_link in book_links]
-    print(books)
+    books = [[book_link, get_book_cover(book_link)] for book_link in book_links[:num]]
+    return books
 
-def get_links(book_name, sort):
+def get_books(book_name, sort):
     search_result = get_search_result(book_name, sort)
     if search_result != None:
-        pass
-        book = get_books_ids(search_result)
-        #link = f'http://flibusta.is{book}/{file_format}'
-        #return link
+        books = get_books_data(search_result, 20)
+        return books
 
 if __name__ == '__main__':
-    get_links('Python', 'litres')
+    books = get_books('Python', 'litres')
