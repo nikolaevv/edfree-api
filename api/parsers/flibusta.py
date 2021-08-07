@@ -29,20 +29,22 @@ def get_book_cover(link):
         print('Connection error')
 
     page = html.fromstring(response.text)
-    images = ['http:{}'.format(image.strip()) for image in page.xpath('//div[@id="main"]/img/@src')]
+    images = ['{}{}'.format(api_base, image.strip()) for image in page.xpath('//div[@id="main"]/img/@src')]
     if len(images) > 0:
         return images[0]
 
 def get_books_data(search_result, num):
     document = html.fromstring(search_result)
-    book_links = ['{}{}'.format(api_base, link) for link in document.xpath('//div/a/@href') if 'download' not in link]
-    books = [{'title': book_link, 'cover': get_book_cover(book_link)} for book_link in book_links[:num]]
+    #print(document.xpath('//div/a')[0].xpath('@href'))
+    books_data = [['{}{}'.format(api_base, link.xpath('@href')[0]), link.text] for link in document.xpath('//div/a') if 'download' not in link.xpath('@href')[0]]
+    books = [{'title': book_item_data[1], 'link': book_item_data[0], 'cover': get_book_cover(book_item_data[0])} for book_item_data in books_data[:num]]
+    print(books)
     return books
 
 def get_books(query):
     search_result = get_search_result(query)
     if search_result != None:
-        books = get_books_data(search_result, 20)
+        books = get_books_data(search_result, 10)
         return books
 
 if __name__ == '__main__':
