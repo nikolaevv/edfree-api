@@ -41,8 +41,8 @@ def get_books_data(search_result, page):
     document = html.fromstring(search_result)
     books_data = [['{}{}'.format(api_base, link.xpath('@href')[0]), link.text] for link in document.xpath('//div/a') if 'download' not in link.xpath('@href')[0]]
     previous_page_num = calculate_previous_page_num(page_size, page)
-    
-    books = [{'title': book_item_data[1], 'link': book_item_data[0], 'cover': get_book_cover(book_item_data[0])} 
+
+    books = [{'title': book_item_data[1], 'source': 'flibusta', 'link': book_item_data[0], 'cover': get_book_cover(book_item_data[0])} 
         for book_item_data in books_data[previous_page_num:previous_page_num+page_size]
     ]
 

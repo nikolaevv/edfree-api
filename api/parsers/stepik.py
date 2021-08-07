@@ -24,7 +24,7 @@ def get_courses(query, page=1):
         return []
 
     data = response.json()
-    courses = [{'title': item['course_title'], 'link': render_course_link(item['course']), 'cover': item['course_cover']} for item in data['search-results']]
+    courses = [{'title': item['course_title'], 'source': 'stepik', 'link': render_course_link(item['course']), 'cover': item['course_cover']} for item in data['search-results']]
     return courses
 
 if __name__ == '__main__':
