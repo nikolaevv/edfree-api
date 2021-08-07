@@ -2,6 +2,7 @@ from lxml import html
 import requests
 
 api_base = 'http://flibusta.is'
+page_size = 20
 
 rating = {
     'файл не оценен': 0,
@@ -28,23 +29,29 @@ def get_book_cover(link):
     except requests.exceptions.ConnectionError:
         print('Connection error')
 
-    page = html.fromstring(response.text)
-    images = ['{}{}'.format(api_base, image.strip()) for image in page.xpath('//div[@id="main"]/img/@src')]
+    document = html.fromstring(response.text)
+    images = ['{}{}'.format(api_base, image.strip()) for image in document.xpath('//div[@id="main"]/img/@src')]
     if len(images) > 0:
         return images[0]
 
-def get_books_data(search_result, num):
+def calculate_previous_page_num(size, num):
+    return (num-1)*size
+
+def get_books_data(search_result, page):
     document = html.fromstring(search_result)
-    #print(document.xpath('//div/a')[0].xpath('@href'))
     books_data = [['{}{}'.format(api_base, link.xpath('@href')[0]), link.text] for link in document.xpath('//div/a') if 'download' not in link.xpath('@href')[0]]
-    books = [{'title': book_item_data[1], 'link': book_item_data[0], 'cover': get_book_cover(book_item_data[0])} for book_item_data in books_data[:num]]
-    print(books)
+    previous_page_num = calculate_previous_page_num(page_size, page)
+    
+    books = [{'title': book_item_data[1], 'link': book_item_data[0], 'cover': get_book_cover(book_item_data[0])} 
+        for book_item_data in books_data[previous_page_num:previous_page_num+page_size]
+    ]
+
     return books
 
-def get_books(query):
+def get_books(query, page=1):
     search_result = get_search_result(query)
     if search_result != None:
-        books = get_books_data(search_result, 10)
+        books = get_books_data(search_result, 1)
         return books
 
 if __name__ == '__main__':
