@@ -53,6 +53,8 @@ def get_books(query, page=1):
     if search_result != None:
         books = get_books_data(search_result, 1)
         return books
+    else:
+        return []
 
 if __name__ == '__main__':
     books = get_books('Python')
