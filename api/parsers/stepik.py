@@ -20,7 +20,7 @@ def get_course_description(id):
 
 def get_data(item):
     description = get_course_description(item['course'])
-    return {'title': item['course_title'], 'description': description, 'source': 'stepik', 'link': render_course_link(item['course']), 'cover': item['course_cover']} 
+    return {'id': item['course'], 'title': item['course_title'], 'description': description, 'source': 'stepik', 'link': render_course_link(item['course']), 'cover': item['course_cover']} 
 
 def get_courses(query, page=1):
     params = {

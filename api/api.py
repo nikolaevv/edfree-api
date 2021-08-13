@@ -23,6 +23,7 @@ app.add_middleware(
 )
 
 class Item(BaseModel):
+    id: int
     title: str
     source: str
     link: str
