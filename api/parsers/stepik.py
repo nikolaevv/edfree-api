@@ -5,9 +5,9 @@ api_base = 'https://stepik.org'
 def render_course_link(id):
     return 'https://stepik.org/course/{}/promo'.format(id)
 
-def get_course_description(id):
+def get_course_descriptions(ids):
     params = {
-        'ids[]': id
+        'ids[]': ids
     }
 
     response = requests.get(
@@ -18,8 +18,7 @@ def get_course_description(id):
     data = response.json()
     return data['courses'][0]['summary']
 
-def get_data(item):
-    description = get_course_description(item['course'])
+def get_data(item, description):
     return {'id': item['course'], 'title': item['course_title'], 'description': description, 'source': 'stepik', 'link': render_course_link(item['course']), 'cover': item['course_cover']} 
 
 def get_courses(query, page=1):
@@ -41,9 +40,13 @@ def get_courses(query, page=1):
         return []
 
     data = response.json()
+
+    course_ids = [str(search_result['course']) for search_result in data['search-results']]
+    descriptions = get_course_descriptions(course_ids)
+
     courses = [
-        get_data(item)
-        for item in data['search-results']
+        get_data(item, descriptions[idx])
+        for idx, item in enumerate(data['search-results'])
     ]
     return courses
 

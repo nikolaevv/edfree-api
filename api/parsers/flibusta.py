@@ -54,7 +54,7 @@ def get_books_data(search_result, page):
 def get_books(query, page=1):
     search_result = get_search_result(query)
     if search_result != None:
-        books = get_books_data(search_result, 1)
+        books = get_books_data(search_result, page)
         return books
     return []
 
