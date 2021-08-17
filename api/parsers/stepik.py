@@ -16,7 +16,8 @@ def get_course_descriptions(ids):
     )
 
     data = response.json()
-    return data['courses'][0]['summary']
+
+    return [course['summary'] for course in data['courses']]
 
 def get_data(item, description):
     return {'id': item['course'], 'title': item['course_title'], 'description': description, 'source': 'stepik', 'link': render_course_link(item['course']), 'cover': item['course_cover']} 
@@ -28,7 +29,8 @@ def get_courses(query, page=1):
         'order': 'likes_rate__none,comments_count__log2p,rating__none,quality__none',
         'page': page,
         'query': query,
-        'type': 'course'
+        'type': 'course',
+        'is_paid': False
     }
 
     try:
